@@ -20,7 +20,7 @@ function ItemsForm({ addItem }) {
   }
 
   function handleQuantityChange(event) {
-    setQuantity(event.target.value);
+    setQuantity(parseInt(event.target.value));
   }
 
   function handleNameChange(event) {
@@ -64,7 +64,22 @@ function App() {
   const [items, setItems] = useState([]);
 
   function addItem(quantity, name) {
+    let id = items.findIndex(item => item.name === name);
+    if (id >= 0) {
+      updateItem(id, quantity);
+    } else {
+      addNewItem(quantity, name);
+    }
+  }
+
+  function addNewItem(quantity, name) {
     setItems([...items, { quantity: quantity, name: name }]);
+  }
+
+  function updateItem(id, quantity) {
+    var newItems = [...items];
+    newItems[id].quantity += quantity;
+    setItems(newItems);
   }
 
   return (
