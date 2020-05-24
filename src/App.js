@@ -165,7 +165,8 @@ function App() {
   function addItem(quantity, name) {
     let id = items.findIndex(item => item.name === name);
     if (id >= 0) {
-      updateItem(id, quantity);
+      let item = items[id];
+      updateItem(id, { ...item, quantity: item.quantity + quantity });
     } else {
       addNewItem(quantity, name);
     }
