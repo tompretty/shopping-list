@@ -85,7 +85,7 @@ function ItemsForm({ items, addItem }) {
   );
 }
 
-function ItemsList({ items }) {
+function ItemsList({ items, updateItem, removeItem }) {
   return (
     <ul>
       {items.map((item, index) => {
@@ -94,6 +94,11 @@ function ItemsList({ items }) {
             <span>{item.quantity}</span>
             <span>&times;</span>
             <span>{item.name}</span>
+            <span>
+              <button onClick={() => updateItem(index, +1)}>+</button>
+              <button onClick={() => updateItem(index, -1)}>-</button>
+              <button onClick={() => removeItem(index)}>remove</button>
+            </span>
           </li>
         );
       })}
@@ -123,10 +128,18 @@ function App() {
     setItems(newItems);
   }
 
+  function removeItem(id) {
+    setItems(items.filter((_, i) => i !== id));
+  }
+
   return (
     <div className="App">
       <ItemsForm items={items} addItem={addItem} />
-      <ItemsList items={items} />
+      <ItemsList
+        items={items}
+        updateItem={updateItem}
+        removeItem={removeItem}
+      />
     </div>
   );
 }
