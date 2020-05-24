@@ -86,6 +86,40 @@ function ItemsForm({ items, addItem }) {
 }
 
 function ItemsList({ items, updateItem, removeItem }) {
+  const [editingItemIndex, setEditingItemIndex] = useState(null);
+  const [newName, setNewName] = useState("");
+
+  function toggleEditing(index) {
+    if (editingItemIndex === index) {
+      setEditingItemIndex(null);
+      setNewName("");
+    } else {
+      setEditingItemIndex(index);
+      setNewName(items[index].name);
+    }
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    updateItem(editingItemIndex, { ...items[editingItemIndex], name: newName });
+
+    setNewName("");
+    setEditingItemIndex(null);
+  }
+
+  function handleNewNameChange(event) {
+    setNewName(event.target.value);
+  }
+
+  function incrementItemQuantity(item, index) {
+    updateItem(index, { ...item, quantity: item.quantity + 1 });
+  }
+
+  function decrementItemQuantity(item, index) {
+    updateItem(index, { ...item, quantity: item.quantity - 1 });
+  }
+
   return (
     <ul>
       {items.map((item, index) => {
@@ -93,11 +127,30 @@ function ItemsList({ items, updateItem, removeItem }) {
           <li key={index}>
             <span>{item.quantity}</span>
             <span>&times;</span>
-            <span>{item.name}</span>
+            {index === editingItemIndex ? (
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={handleNewNameChange}
+                  ref={newNameInput => newNameInput && newNameInput.focus()}
+                />
+                <button type="submit" hidden>
+                  Submit
+                </button>
+              </form>
+            ) : (
+              <span>{item.name}</span>
+            )}
             <span>
-              <button onClick={() => updateItem(index, +1)}>+</button>
-              <button onClick={() => updateItem(index, -1)}>-</button>
+              <button onClick={() => incrementItemQuantity(item, index)}>
+                +
+              </button>
+              <button onClick={() => decrementItemQuantity(item, index)}>
+                -
+              </button>
               <button onClick={() => removeItem(index)}>remove</button>
+              <button onClick={() => toggleEditing(index)}>edit</button>
             </span>
           </li>
         );
@@ -122,9 +175,9 @@ function App() {
     setItems([...items, { quantity: quantity, name: name }]);
   }
 
-  function updateItem(id, quantity) {
+  function updateItem(id, item) {
     var newItems = [...items];
-    newItems[id].quantity += quantity;
+    newItems[id] = item;
     setItems(newItems);
   }
 
