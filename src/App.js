@@ -1,14 +1,21 @@
 import React, { useState, useRef } from "react";
 
-function ItemsForm({ addItem }) {
+function ItemsForm({ items, addItem }) {
   const [quantity, setQuantity] = useState("");
   const [name, setName] = useState("");
+  const [completions, setCompletions] = useState([]);
+  const [selectedCompletion, setSelectedCompletion] = useState("");
+
   const quantityInput = useRef(null);
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    addItem(quantity, name);
+    if (selectedCompletion) {
+      addItem(quantity, selectedCompletion);
+    } else {
+      addItem(quantity, name);
+    }
     resetState();
 
     quantityInput.current.focus();
@@ -17,6 +24,8 @@ function ItemsForm({ addItem }) {
   function resetState() {
     setQuantity("");
     setName("");
+    setCompletions([]);
+    setSelectedCompletion("");
   }
 
   function handleQuantityChange(event) {
@@ -25,6 +34,17 @@ function ItemsForm({ addItem }) {
 
   function handleNameChange(event) {
     setName(event.target.value);
+    updateCompletions(event.target.value);
+  }
+
+  function updateCompletions(string) {
+    if (string) {
+      setCompletions(
+        items.filter(item => item.name.includes(string)).map(item => item.name)
+      );
+    } else {
+      setCompletions([]);
+    }
   }
 
   return (
@@ -36,10 +56,31 @@ function ItemsForm({ addItem }) {
         ref={quantityInput}
       />
       <span>&times;</span>
-      <input type="text" onChange={handleNameChange} value={name} />
+      <input
+        type="text"
+        onChange={handleNameChange}
+        onFocus={() => setSelectedCompletion("")}
+        value={name}
+      />
       <button type="submit" hidden>
         Submit
       </button>
+      <div>
+        <ul>
+          {completions.map((completion, index) => {
+            return (
+              <li key={index}>
+                <input
+                  type="text"
+                  value={completion}
+                  onFocus={() => setSelectedCompletion(completion)}
+                  readonly
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </form>
   );
 }
@@ -84,7 +125,7 @@ function App() {
 
   return (
     <div className="App">
-      <ItemsForm addItem={addItem} />
+      <ItemsForm items={items} addItem={addItem} />
       <ItemsList items={items} />
     </div>
   );
