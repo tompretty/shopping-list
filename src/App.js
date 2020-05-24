@@ -112,11 +112,11 @@ function ItemsList({ items, updateItem, removeItem }) {
     setNewName(event.target.value);
   }
 
-  function incrementItemQuantity(item, index) {
+  function incrementItemQuantity(index, item) {
     updateItem(index, { ...item, quantity: item.quantity + 1 });
   }
 
-  function decrementItemQuantity(item, index) {
+  function decrementItemQuantity(index, item) {
     updateItem(index, { ...item, quantity: item.quantity - 1 });
   }
 
@@ -143,10 +143,10 @@ function ItemsList({ items, updateItem, removeItem }) {
               <span>{item.name}</span>
             )}
             <span>
-              <button onClick={() => incrementItemQuantity(item, index)}>
+              <button onClick={() => incrementItemQuantity(index, item)}>
                 +
               </button>
-              <button onClick={() => decrementItemQuantity(item, index)}>
+              <button onClick={() => decrementItemQuantity(index, item)}>
                 -
               </button>
               <button onClick={() => removeItem(index)}>remove</button>
@@ -175,9 +175,9 @@ function App() {
     setItems([...items, { quantity: quantity, name: name }]);
   }
 
-  function updateItem(id, item) {
+  function updateItem(index, item) {
     var newItems = [...items];
-    newItems[id] = item;
+    newItems[index] = item;
     setItems(newItems);
   }
 
