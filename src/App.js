@@ -196,6 +196,19 @@ function App() {
     setItems([]);
   }
 
+  function copyToClipboard() {
+    let textArea = document.createElement("textarea");
+    textArea.value = itemsToString();
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+  }
+
+  function itemsToString() {
+    return items.map(item => `${item.quantity} x ${item.name}`).join("\n");
+  }
+
   return (
     <div className="App">
       <ItemsForm items={items} addItem={addItem} />
@@ -205,6 +218,7 @@ function App() {
         removeItem={removeItem}
       />
       <button onClick={startNewList}>Start new list</button>
+      <button onClick={copyToClipboard}>Copy to clipboard</button>
     </div>
   );
 }
