@@ -192,6 +192,10 @@ function App() {
     setItems(items.filter((_, i) => i !== id));
   }
 
+  function startNewList() {
+    setItems([]);
+  }
+
   return (
     <div className="App">
       <ItemsForm items={items} addItem={addItem} />
@@ -200,6 +204,7 @@ function App() {
         updateItem={updateItem}
         removeItem={removeItem}
       />
+      <button onClick={startNewList}>Start new list</button>
     </div>
   );
 }
