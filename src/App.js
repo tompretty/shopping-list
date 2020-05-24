@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 function ItemsForm({ items, addItem }) {
   const [quantity, setQuantity] = useState("");
@@ -160,7 +160,13 @@ function ItemsList({ items, updateItem, removeItem }) {
 }
 
 function App() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(
+    JSON.parse(localStorage.getItem("items")) || []
+  );
+
+  useEffect(() => {
+    localStorage.setItem("items", JSON.stringify(items));
+  }, [items]);
 
   function addItem(quantity, name) {
     let id = items.findIndex(item => item.name === name);
