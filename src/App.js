@@ -4,20 +4,14 @@ function ItemsForm({ items, addItem }) {
   const [quantity, setQuantity] = useState("");
   const [name, setName] = useState("");
   const [completions, setCompletions] = useState([]);
-  const [selectedCompletion, setSelectedCompletion] = useState("");
 
   const quantityInput = useRef(null);
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (selectedCompletion) {
-      addItem(quantity, selectedCompletion);
-    } else {
-      addItem(quantity, name);
-    }
+    addItem(quantity, name);
     resetState();
-
     quantityInput.current.focus();
   }
 
@@ -25,7 +19,6 @@ function ItemsForm({ items, addItem }) {
     setQuantity("");
     setName("");
     setCompletions([]);
-    setSelectedCompletion("");
   }
 
   function handleQuantityChange(event) {
@@ -63,32 +56,21 @@ function ItemsForm({ items, addItem }) {
         <div className="col">
           <input
             type="text"
+            list="completions"
             className="form-control"
             onChange={handleNameChange}
-            onFocus={() => setSelectedCompletion("")}
             value={name}
           />
+          <datalist id="completions">
+            {completions.map((completion, index) => {
+              return <option value={completion} key={index} />;
+            })}
+          </datalist>
         </div>
       </div>
       <button type="submit" hidden>
         Submit
       </button>
-      <div>
-        <ul>
-          {completions.map((completion, index) => {
-            return (
-              <li key={index}>
-                <input
-                  type="text"
-                  value={completion}
-                  onFocus={() => setSelectedCompletion(completion)}
-                  readonly
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </div>
     </form>
   );
 }
@@ -233,11 +215,13 @@ function App() {
   return (
     <div className="App d-flex flex-column container mt-5">
       <ItemsForm items={items} addItem={addItem} />
-      <ItemsList
-        items={items}
-        updateItem={updateItem}
-        removeItem={removeItem}
-      />
+      <div className="mt-3">
+        <ItemsList
+          items={items}
+          updateItem={updateItem}
+          removeItem={removeItem}
+        />
+      </div>
       <div className="d-flex justify-content-between mt-3">
         <button
           type="button"
