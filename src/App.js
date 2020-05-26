@@ -49,7 +49,7 @@ function ItemsForm({ items, addItem }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div class="row align-items-center">
+      <div className="row align-items-center">
         <div className="col-3">
           <input
             type="number"
@@ -132,24 +132,27 @@ function ItemsList({ items, updateItem, removeItem }) {
       {items.map((item, index) => {
         return (
           <li className="list-group-item" key={index}>
-            <div class="row align-items-center">
-              <div class="col-2 text-right">{item.quantity}</div>
-              <div class="col-2 text-center">&times;</div>
-              {index === editingItemIndex ? (
-                <form onSubmit={handleSubmit}>
-                  <input
-                    type="text"
-                    value={newName}
-                    onChange={handleNewNameChange}
-                    ref={newNameInput => newNameInput && newNameInput.focus()}
-                  />
-                  <button type="submit" hidden>
-                    Submit
-                  </button>
-                </form>
-              ) : (
-                <div className="col">{item.name}</div>
-              )}
+            <div className="row align-items-center">
+              <div className="col-2 text-right">{item.quantity}</div>
+              <div className="col-2 text-center">&times;</div>
+              <div className="col">
+                {index === editingItemIndex ? (
+                  <form onSubmit={handleSubmit}>
+                    <input
+                      className="form-control form-control-sm"
+                      type="text"
+                      value={newName}
+                      onChange={handleNewNameChange}
+                      ref={newNameInput => newNameInput && newNameInput.focus()}
+                    />
+                    <button type="submit" hidden>
+                      Submit
+                    </button>
+                  </form>
+                ) : (
+                  <div>{item.name}</div>
+                )}
+              </div>
               <div className="col-2">
                 <button
                   className="btn btn-outline-danger btn-sm"
