@@ -233,7 +233,7 @@ function App() {
 
   return (
     <div className="App d-flex flex-column container mt-5">
-      <h1 className="mb-3">Build My Shopping List</h1>
+      <h1 className="mb-3">&#128722; Build My Shopping List</h1>
 
       <ItemsForm items={items} addItem={addItem} />
       <div className="mt-3">
