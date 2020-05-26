@@ -162,6 +162,38 @@ function ItemsListItem({ item, update, remove }) {
   );
 }
 
+function CopyToClipboardButton({ items }) {
+  const [text, setText] = useState("Copy to clipboard");
+
+  function copyToClipboard() {
+    let textArea = document.createElement("textarea");
+    textArea.value = itemsToString();
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+
+    setText("Copied!");
+    setTimeout(() => setText("Copy to clipboard"), 2000);
+  }
+
+  function itemsToString() {
+    return items.map(item => `${item.quantity} x ${item.name}`).join("\n");
+  }
+
+  return (
+    <div className="" style={{ width: "175px" }}>
+      <button
+        type="button"
+        className="btn btn-secondary btn-block"
+        onClick={copyToClipboard}
+      >
+        {text}
+      </button>
+    </div>
+  );
+}
+
 function App() {
   const [items, setItems] = useState(
     JSON.parse(localStorage.getItem("items")) || []
@@ -199,19 +231,6 @@ function App() {
     setItems([]);
   }
 
-  function copyToClipboard() {
-    let textArea = document.createElement("textarea");
-    textArea.value = itemsToString();
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textArea);
-  }
-
-  function itemsToString() {
-    return items.map(item => `${item.quantity} x ${item.name}`).join("\n");
-  }
-
   return (
     <div className="App d-flex flex-column container mt-5">
       <ItemsForm items={items} addItem={addItem} />
@@ -223,13 +242,7 @@ function App() {
         />
       </div>
       <div className="d-flex justify-content-between mt-3">
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={copyToClipboard}
-        >
-          Copy to clipboard
-        </button>
+        <CopyToClipboardButton items={items} />
 
         <button
           type="button"
