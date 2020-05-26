@@ -94,88 +94,89 @@ function ItemsForm({ items, addItem }) {
 }
 
 function ItemsList({ items, updateItem, removeItem }) {
-  const [editingItemIndex, setEditingItemIndex] = useState(null);
-  const [newName, setNewName] = useState("");
-  function toggleEditing(index) {
-    if (editingItemIndex === index) {
-      setEditingItemIndex(null);
-      setNewName("");
-    } else {
-      setEditingItemIndex(index);
-      setNewName(items[index].name);
-    }
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    updateItem(editingItemIndex, { ...items[editingItemIndex], name: newName });
-
-    setNewName("");
-    setEditingItemIndex(null);
-  }
-
-  function handleNewNameChange(event) {
-    setNewName(event.target.value);
-  }
-
-  function incrementItemQuantity(index, item) {
-    updateItem(index, { ...item, quantity: item.quantity + 1 });
-  }
-
-  function decrementItemQuantity(index, item) {
-    updateItem(index, { ...item, quantity: item.quantity - 1 });
-  }
-
   return (
     <ul className="list-group">
       {items.map((item, index) => {
         return (
-          <li className="list-group-item" key={index}>
-            <div className="row align-items-center">
-              <div className="col-2 text-right">{item.quantity}</div>
-              <div className="col-2 text-center">&times;</div>
-              <div className="col">
-                {index === editingItemIndex ? (
-                  <form onSubmit={handleSubmit}>
-                    <input
-                      className="form-control form-control-sm"
-                      type="text"
-                      value={newName}
-                      onChange={handleNewNameChange}
-                      ref={newNameInput => newNameInput && newNameInput.focus()}
-                    />
-                    <button type="submit" hidden>
-                      Submit
-                    </button>
-                  </form>
-                ) : (
-                  <div>{item.name}</div>
-                )}
-              </div>
-              <div className="col-2">
-                <button
-                  className="btn btn-outline-danger btn-sm"
-                  onClick={() => removeItem(index)}
-                >
-                  &times;
-                </button>
-              </div>
-              <span hidden>
-                <button onClick={() => incrementItemQuantity(index, item)}>
-                  +
-                </button>
-                <button onClick={() => decrementItemQuantity(index, item)}>
-                  -
-                </button>
-                <button onClick={() => removeItem(index)}>remove</button>
-                <button onClick={() => toggleEditing(index)}>edit</button>
-              </span>
-            </div>
-          </li>
+          <ItemsListItem
+            item={item}
+            key={index}
+            index={index}
+            update={item => updateItem(index, item)}
+            remove={() => removeItem(index)}
+          />
         );
       })}
     </ul>
+  );
+}
+
+function ItemsListItem({ item, update, remove }) {
+  const [state, setState] = useState("showing"); // showing | editing-quantity | editing-name
+  const [newName, setNewName] = useState(item.name);
+  const [newQuantity, setNewQuantity] = useState(item.quantity);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    update({ name: newName, quantity: newQuantity });
+    setState("showing");
+  }
+
+  return (
+    <li className="list-group-item">
+      <div className="row align-items-center">
+        <div className="col-2 text-right">
+          {state === "editing-quantity" ? (
+            <form onSubmit={handleSubmit}>
+              <input
+                className="form-control form-control-sm"
+                type="number"
+                value={newQuantity}
+                onChange={e => setNewQuantity(e.target.value)}
+                onBlur={() => setState("showing")}
+                ref={newNameInput => newNameInput && newNameInput.focus()}
+              />
+              <button type="submit" hidden>
+                Submit
+              </button>
+            </form>
+          ) : (
+            <div onClick={() => setState("editing-quantity")}>
+              {item.quantity}
+            </div>
+          )}
+        </div>
+
+        <div className="col-2 text-center">&times;</div>
+
+        <div className="col">
+          {state === "editing-name" ? (
+            <form onSubmit={handleSubmit}>
+              <input
+                className="form-control form-control-sm"
+                type="text"
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                onBlur={() => setState("showing")}
+                ref={newNameInput => newNameInput && newNameInput.focus()}
+              />
+              <button type="submit" hidden>
+                Submit
+              </button>
+            </form>
+          ) : (
+            <div onClick={() => setState("editing-name")}>{item.name}</div>
+          )}
+        </div>
+
+        <div className="col-2">
+          <button className="btn btn-outline-danger btn-sm" onClick={remove}>
+            &times;
+          </button>
+        </div>
+      </div>
+    </li>
   );
 }
 
