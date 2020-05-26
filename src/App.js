@@ -49,19 +49,27 @@ function ItemsForm({ items, addItem }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="number"
-        onChange={handleQuantityChange}
-        value={quantity}
-        ref={quantityInput}
-      />
-      <span>&times;</span>
-      <input
-        type="text"
-        onChange={handleNameChange}
-        onFocus={() => setSelectedCompletion("")}
-        value={name}
-      />
+      <div class="row align-items-center">
+        <div className="col-3">
+          <input
+            type="number"
+            className="form-control"
+            onChange={handleQuantityChange}
+            value={quantity}
+            ref={quantityInput}
+          />
+        </div>
+        <div>&times;</div>
+        <div className="col">
+          <input
+            type="text"
+            className="form-control"
+            onChange={handleNameChange}
+            onFocus={() => setSelectedCompletion("")}
+            value={name}
+          />
+        </div>
+      </div>
       <button type="submit" hidden>
         Submit
       </button>
@@ -88,7 +96,6 @@ function ItemsForm({ items, addItem }) {
 function ItemsList({ items, updateItem, removeItem }) {
   const [editingItemIndex, setEditingItemIndex] = useState(null);
   const [newName, setNewName] = useState("");
-
   function toggleEditing(index) {
     if (editingItemIndex === index) {
       setEditingItemIndex(null);
@@ -121,37 +128,47 @@ function ItemsList({ items, updateItem, removeItem }) {
   }
 
   return (
-    <ul>
+    <ul className="list-group">
       {items.map((item, index) => {
         return (
-          <li key={index}>
-            <span>{item.quantity}</span>
-            <span>&times;</span>
-            {index === editingItemIndex ? (
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={handleNewNameChange}
-                  ref={newNameInput => newNameInput && newNameInput.focus()}
-                />
-                <button type="submit" hidden>
-                  Submit
+          <li className="list-group-item" key={index}>
+            <div class="row align-items-center">
+              <div class="col-2 text-right">{item.quantity}</div>
+              <div class="col-2 text-center">&times;</div>
+              {index === editingItemIndex ? (
+                <form onSubmit={handleSubmit}>
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={handleNewNameChange}
+                    ref={newNameInput => newNameInput && newNameInput.focus()}
+                  />
+                  <button type="submit" hidden>
+                    Submit
+                  </button>
+                </form>
+              ) : (
+                <div className="col">{item.name}</div>
+              )}
+              <div className="col-2">
+                <button
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => removeItem(index)}
+                >
+                  &times;
                 </button>
-              </form>
-            ) : (
-              <span>{item.name}</span>
-            )}
-            <span>
-              <button onClick={() => incrementItemQuantity(index, item)}>
-                +
-              </button>
-              <button onClick={() => decrementItemQuantity(index, item)}>
-                -
-              </button>
-              <button onClick={() => removeItem(index)}>remove</button>
-              <button onClick={() => toggleEditing(index)}>edit</button>
-            </span>
+              </div>
+              <span hidden>
+                <button onClick={() => incrementItemQuantity(index, item)}>
+                  +
+                </button>
+                <button onClick={() => decrementItemQuantity(index, item)}>
+                  -
+                </button>
+                <button onClick={() => removeItem(index)}>remove</button>
+                <button onClick={() => toggleEditing(index)}>edit</button>
+              </span>
+            </div>
           </li>
         );
       })}
@@ -210,15 +227,30 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App d-flex flex-column container mt-5">
       <ItemsForm items={items} addItem={addItem} />
       <ItemsList
         items={items}
         updateItem={updateItem}
         removeItem={removeItem}
       />
-      <button onClick={startNewList}>Start new list</button>
-      <button onClick={copyToClipboard}>Copy to clipboard</button>
+      <div className="d-flex justify-content-between mt-3">
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={copyToClipboard}
+        >
+          Copy to clipboard
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={startNewList}
+        >
+          Start new list
+        </button>
+      </div>
     </div>
   );
 }
