@@ -1,4 +1,24 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Build My Shopping List
+
+A simple app for creating shopping lists. Check it out at [buildmyshoppinglist.com](https://buildmyshoppinglist.com).
+
+## Overview
+
+Ever had to compile a shopping list from half a dozen different recipes? Well
+my partner made me do it one time and it sucked 👎.
+
+That's why I built this. Don't waste time scouring through your list to see if
+you've already added those pesky onions. Every time you add an item with Build
+My Shopping List it will automatically handle either adding a new item or
+updating an existing one 👍.
+
+When you've finished building your list, you can copy it to your clipboard. I
+use [Microsoft To Do](https://todo.microsoft.com/tasks/) for my todo lists.
+Pasting in my copied list will add a new todo for each item on the shopping
+list. I don't know if this works for other todo apps 🤷, but you could
+definitely give it a shot!
+
+Now, onto the technical stuff...
 
 ## Available Scripts
 
