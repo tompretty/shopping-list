@@ -233,14 +233,16 @@ function App() {
 
   return (
     <div className="App d-flex flex-column container mt-5">
-      <h1 className="mb-4">
-        <span role="img" aria-label="shopping cart">
+      <header className="d-flex align-items-center">
+        <span className="h1" role="img" aria-label="shopping cart">
           &#128722;
-        </span>{" "}
-        Build My Shopping List
-      </h1>
+        </span>
+        <h1 className="ml-4">Build My Shopping List</h1>
+      </header>
 
-      <ItemsForm items={items} addItem={addItem} />
+      <div className="mt-3">
+        <ItemsForm items={items} addItem={addItem} />
+      </div>
 
       <div className="mt-4">
         <ItemsList
