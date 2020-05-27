@@ -4,19 +4,23 @@ function ItemsForm({ items, addItem }) {
   const [quantity, setQuantity] = useState("");
   const [name, setName] = useState("");
 
+  const form = useRef(null);
   const quantityInput = useRef(null);
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    addItem(parseInt(quantity), name);
-    resetState();
-    quantityInput.current.focus();
+    if (form.current.reportValidity()) {
+      addItem(parseInt(quantity), name);
+      resetState();
+    }
   }
 
   function resetState() {
     setQuantity("");
     setName("");
+
+    quantityInput.current.focus();
   }
 
   function handleQuantityChange(event) {
@@ -28,7 +32,7 @@ function ItemsForm({ items, addItem }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} ref={form} noValidate>
       <div className="row align-items-center font-weight-bold">
         <label className="col-3" htmlFor="quantityInput">
           Quantity
@@ -48,6 +52,7 @@ function ItemsForm({ items, addItem }) {
             onChange={handleQuantityChange}
             value={quantity}
             ref={quantityInput}
+            required
           />
         </div>
         <div className="col-1 text-center">&times;</div>
@@ -59,6 +64,7 @@ function ItemsForm({ items, addItem }) {
             className="form-control"
             onChange={handleNameChange}
             value={name}
+            required
           />
           <datalist id="completions">
             {items.map((item, index) => {
