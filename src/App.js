@@ -9,7 +9,7 @@ function ItemsForm({ items, addItem }) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    addItem(quantity, name);
+    addItem(parseInt(quantity), name);
     resetState();
     quantityInput.current.focus();
   }
@@ -20,7 +20,7 @@ function ItemsForm({ items, addItem }) {
   }
 
   function handleQuantityChange(event) {
-    setQuantity(parseInt(event.target.value));
+    setQuantity(event.target.value);
   }
 
   function handleNameChange(event) {
@@ -29,9 +29,20 @@ function ItemsForm({ items, addItem }) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <div className="row align-items-center font-weight-bold">
+        <label className="col-3" htmlFor="quantityInput">
+          Quantity
+        </label>
+        <div className="col-1"></div>
+        <label className="col-8" htmlFor="nameInput">
+          Name
+        </label>
+      </div>
+
       <div className="row align-items-center">
         <div className="col-3">
           <input
+            id="quantityInput"
             type="number"
             className="form-control"
             onChange={handleQuantityChange}
@@ -39,9 +50,10 @@ function ItemsForm({ items, addItem }) {
             ref={quantityInput}
           />
         </div>
-        <div>&times;</div>
-        <div className="col">
+        <div className="col-1 text-center">&times;</div>
+        <div className="col-8">
           <input
+            id="nameInput"
             type="text"
             list="completions"
             className="form-control"
@@ -55,6 +67,7 @@ function ItemsForm({ items, addItem }) {
           </datalist>
         </div>
       </div>
+
       <button type="submit" hidden>
         Submit
       </button>
@@ -119,7 +132,7 @@ function ItemsListItem({ item, update, remove }) {
 
         <div className="col-2 text-center">&times;</div>
 
-        <div className="col">
+        <div className="col-6">
           {state === "editing-name" ? (
             <form onSubmit={handleSubmit}>
               <input
@@ -220,7 +233,7 @@ function App() {
 
   return (
     <div className="App d-flex flex-column container mt-5">
-      <h1 className="mb-3">
+      <h1 className="mb-4">
         <span role="img" aria-label="shopping cart">
           &#128722;
         </span>{" "}
@@ -228,14 +241,15 @@ function App() {
       </h1>
 
       <ItemsForm items={items} addItem={addItem} />
-      <div className="mt-3">
+
+      <div className="mt-4">
         <ItemsList
           items={items}
           updateItem={updateItem}
           removeItem={removeItem}
         />
       </div>
-      <div className="d-flex justify-content-between mt-3">
+      <div className="d-flex justify-content-between mt-4">
         <CopyToClipboardButton items={items} />
 
         <button
