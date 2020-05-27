@@ -111,7 +111,7 @@ function ItemsListItem({ item, update, remove }) {
     event.preventDefault();
 
     if (quantityForm.current.reportValidity()) {
-      let newItem = { ...item, quantity: newQuantity };
+      let newItem = { ...item, quantity: parseInt(newQuantity) };
       update(newItem);
       updateState(newItem);
     }
