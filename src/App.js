@@ -111,8 +111,9 @@ function ItemsListItem({ item, update, remove }) {
     event.preventDefault();
 
     if (quantityForm.current.reportValidity()) {
-      update({ ...item, quantity: newQuantity });
-      resetState();
+      let newItem = { ...item, quantity: newQuantity };
+      update(newItem);
+      updateState(newItem);
     }
   }
 
@@ -120,9 +121,16 @@ function ItemsListItem({ item, update, remove }) {
     event.preventDefault();
 
     if (nameForm.current.reportValidity()) {
-      update({ ...item, name: newName });
-      resetState();
+      let newItem = { ...item, name: newName };
+      update(newItem);
+      updateState(newItem);
     }
+  }
+
+  function updateState(newItem) {
+    setState("showing");
+    setNewQuantity(newItem.quantity);
+    setNewName(newItem.name);
   }
 
   function resetState() {
