@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 function ItemsForm({ items, addItem }) {
   const [quantity, setQuantity] = useState("");
   const [name, setName] = useState("");
-  const [completions, setCompletions] = useState([]);
 
   const quantityInput = useRef(null);
 
@@ -18,7 +17,6 @@ function ItemsForm({ items, addItem }) {
   function resetState() {
     setQuantity("");
     setName("");
-    setCompletions([]);
   }
 
   function handleQuantityChange(event) {
@@ -27,17 +25,6 @@ function ItemsForm({ items, addItem }) {
 
   function handleNameChange(event) {
     setName(event.target.value);
-    updateCompletions(event.target.value);
-  }
-
-  function updateCompletions(string) {
-    if (string) {
-      setCompletions(
-        items.filter(item => item.name.includes(string)).map(item => item.name)
-      );
-    } else {
-      setCompletions([]);
-    }
   }
 
   return (
@@ -62,8 +49,8 @@ function ItemsForm({ items, addItem }) {
             value={name}
           />
           <datalist id="completions">
-            {completions.map((completion, index) => {
-              return <option value={completion} key={index} />;
+            {items.map((item, index) => {
+              return <option value={item.name} key={index} />;
             })}
           </datalist>
         </div>
