@@ -104,11 +104,31 @@ function ItemsListItem({ item, update, remove }) {
   const [newName, setNewName] = useState(item.name);
   const [newQuantity, setNewQuantity] = useState(item.quantity);
 
-  function handleSubmit(event) {
+  const quantityForm = useRef(null);
+  const nameForm = useRef(null);
+
+  function handleSubmitQuantity(event) {
     event.preventDefault();
 
-    update({ name: newName, quantity: newQuantity });
+    if (quantityForm.current.reportValidity()) {
+      update({ ...item, quantity: newQuantity });
+      resetState();
+    }
+  }
+
+  function handleSubmitName(event) {
+    event.preventDefault();
+
+    if (nameForm.current.reportValidity()) {
+      update({ ...item, name: newName });
+      resetState();
+    }
+  }
+
+  function resetState() {
     setState("showing");
+    setNewQuantity(item.quantity);
+    setNewName(item.name);
   }
 
   return (
@@ -116,14 +136,15 @@ function ItemsListItem({ item, update, remove }) {
       <div className="row align-items-center">
         <div className="col-2 text-right">
           {state === "editing-quantity" ? (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmitQuantity} ref={quantityForm} noValidate>
               <input
                 className="form-control form-control-sm"
                 type="number"
                 value={newQuantity}
                 onChange={e => setNewQuantity(e.target.value)}
-                onBlur={() => setState("showing")}
+                onBlur={resetState}
                 ref={newNameInput => newNameInput && newNameInput.focus()}
+                required
               />
               <button type="submit" hidden>
                 Submit
@@ -140,14 +161,15 @@ function ItemsListItem({ item, update, remove }) {
 
         <div className="col-6">
           {state === "editing-name" ? (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmitName} ref={nameForm} noValidate>
               <input
                 className="form-control form-control-sm"
                 type="text"
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
-                onBlur={() => setState("showing")}
+                onBlur={resetState}
                 ref={newNameInput => newNameInput && newNameInput.focus()}
+                required
               />
               <button type="submit" hidden>
                 Submit
