@@ -33,7 +33,7 @@ function ItemsForm({ items, addItem }) {
 
   return (
     <form onSubmit={handleSubmit} ref={form} noValidate>
-      <div className="row align-items-center font-weight-bold">
+      <div className="form-row align-items-center font-weight-bold">
         <label className="col-3" htmlFor="quantityInput">
           Quantity
         </label>
@@ -43,7 +43,7 @@ function ItemsForm({ items, addItem }) {
         </label>
       </div>
 
-      <div className="row align-items-center">
+      <div className="form-row align-items-center">
         <div className="col-3">
           <input
             id="quantityInput"
@@ -56,7 +56,7 @@ function ItemsForm({ items, addItem }) {
           />
         </div>
         <div className="col-1 text-center">&times;</div>
-        <div className="col-8">
+        <div className="col-6">
           <input
             id="nameInput"
             type="text"
@@ -72,11 +72,12 @@ function ItemsForm({ items, addItem }) {
             })}
           </datalist>
         </div>
+        <div className="col-2">
+          <button className="btn btn-secondary btn-block" type="submit">
+            Add
+          </button>
+        </div>
       </div>
-
-      <button type="submit" hidden>
-        Submit
-      </button>
     </form>
   );
 }
