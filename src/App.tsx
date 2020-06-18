@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 
-function ItemsForm({ items, addItem }) {
+interface ItemsFormProps {
+  completions: Array<string>;
+  addItem: (name: string, quantity: number) => void;
+}
+
+const ItemsForm: React.FC<ItemsFormProps> = ({ completions, addItem }) => {
   const [quantity, setQuantity] = useState("");
   const [name, setName] = useState("");
 
-  const form = useRef(null);
-  const quantityInput = useRef(null);
+  const form = useRef<HTMLFormElement>(null);
+  const quantityInput = useRef<HTMLInputElement>(null);
 
-  function handleSubmit(event) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (form.current.reportValidity()) {
-      addItem(parseInt(quantity), name);
+    if (form.current && form.current.reportValidity()) {
+      addItem(name, parseFloat(quantity));
       resetState();
     }
   }
@@ -20,14 +24,14 @@ function ItemsForm({ items, addItem }) {
     setQuantity("");
     setName("");
 
-    quantityInput.current.focus();
+    quantityInput.current && quantityInput.current.focus();
   }
 
-  function handleQuantityChange(event) {
+  function handleQuantityChange(event: React.ChangeEvent<HTMLInputElement>) {
     setQuantity(event.target.value);
   }
 
-  function handleNameChange(event) {
+  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
     setName(event.target.value);
   }
 
@@ -67,8 +71,8 @@ function ItemsForm({ items, addItem }) {
             required
           />
           <datalist id="completions">
-            {items.map((item, index) => {
-              return <option value={item.name} key={index} />;
+            {completions.map((completion, index) => {
+              return <option value={completion} key={index} />;
             })}
           </datalist>
         </div>
@@ -80,9 +84,19 @@ function ItemsForm({ items, addItem }) {
       </div>
     </form>
   );
+};
+
+interface ItemsListProps {
+  items: Array<Item>;
+  removeItem: (index: number) => void;
+  updateItem: (index: number, item: Item) => void;
 }
 
-function ItemsList({ items, updateItem, removeItem }) {
+const ItemsList: React.FC<ItemsListProps> = ({
+  items,
+  removeItem,
+  updateItem,
+}) => {
   return (
     <ul className="list-group">
       {items.map((item, index) => {
@@ -90,53 +104,68 @@ function ItemsList({ items, updateItem, removeItem }) {
           <ItemsListItem
             item={item}
             key={index}
-            index={index}
-            update={item => updateItem(index, item)}
+            update={(item) => updateItem(index, item)}
             remove={() => removeItem(index)}
           />
         );
       })}
     </ul>
   );
+};
+
+interface ItemsListItemProps {
+  item: Item;
+  remove: () => void;
+  update: (newItem: Item) => void;
 }
 
-function ItemsListItem({ item, update, remove }) {
+const ItemsListItem: React.FC<ItemsListItemProps> = ({
+  item,
+  remove,
+  update,
+}) => {
   const [state, setState] = useState("showing"); // showing | editing-quantity | editing-name
   const [newName, setNewName] = useState(item.name);
-  const [newQuantity, setNewQuantity] = useState(item.quantity);
+  const [newQuantity, setNewQuantity] = useState(item.quantity.toString());
 
-  const quantityForm = useRef(null);
-  const nameForm = useRef(null);
+  const quantityForm = useRef<HTMLFormElement>(null);
+  const nameForm = useRef<HTMLFormElement>(null);
 
-  function handleSubmitQuantity(event) {
+  function handleQuantityChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setNewQuantity(event.target.value);
+  }
+
+  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setNewName(event.target.value);
+  }
+
+  function handleSubmitQuantity(event: React.ChangeEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (quantityForm.current.reportValidity()) {
+    if (quantityForm.current && quantityForm.current.reportValidity()) {
       let newItem = { ...item, quantity: parseInt(newQuantity) };
       update(newItem);
       updateState(newItem);
     }
   }
 
-  function handleSubmitName(event) {
+  function handleSubmitName(event: React.ChangeEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (nameForm.current.reportValidity()) {
+    if (nameForm.current && nameForm.current.reportValidity()) {
       let newItem = { ...item, name: newName };
       update(newItem);
       updateState(newItem);
     }
   }
 
-  function updateState(newItem) {
+  function updateState(newItem: Item) {
     setState("showing");
-    setNewQuantity(newItem.quantity);
+    setNewQuantity(newItem.quantity.toString());
     setNewName(newItem.name);
   }
 
   function resetState() {
     setState("showing");
-    setNewQuantity(item.quantity);
+    setNewQuantity(item.quantity.toString());
     setNewName(item.name);
   }
 
@@ -150,9 +179,9 @@ function ItemsListItem({ item, update, remove }) {
                 className="form-control form-control-sm"
                 type="number"
                 value={newQuantity}
-                onChange={e => setNewQuantity(e.target.value)}
+                onChange={handleQuantityChange}
                 onBlur={resetState}
-                ref={newNameInput => newNameInput && newNameInput.focus()}
+                ref={(newNameInput) => newNameInput && newNameInput.focus()}
                 required
               />
               <button type="submit" hidden>
@@ -175,9 +204,9 @@ function ItemsListItem({ item, update, remove }) {
                 className="form-control form-control-sm"
                 type="text"
                 value={newName}
-                onChange={e => setNewName(e.target.value)}
+                onChange={handleNameChange}
                 onBlur={resetState}
-                ref={newNameInput => newNameInput && newNameInput.focus()}
+                ref={(newNameInput) => newNameInput && newNameInput.focus()}
                 required
               />
               <button type="submit" hidden>
@@ -197,9 +226,13 @@ function ItemsListItem({ item, update, remove }) {
       </div>
     </li>
   );
+};
+
+interface CopyToClipboardProps {
+  items: Array<Item>;
 }
 
-function CopyToClipboardButton({ items }) {
+const CopyToClipboardButton: React.FC<CopyToClipboardProps> = ({ items }) => {
   const [text, setText] = useState("Copy to clipboard");
 
   function copyToClipboard() {
@@ -215,7 +248,7 @@ function CopyToClipboardButton({ items }) {
   }
 
   function itemsToString() {
-    return items.map(item => `${item.quantity} x ${item.name}`).join("\n");
+    return items.map((item) => `${item.quantity} x ${item.name}`).join("\n");
   }
 
   return (
@@ -229,39 +262,48 @@ function CopyToClipboardButton({ items }) {
       </button>
     </div>
   );
+};
+
+interface Item {
+  name: string;
+  quantity: number;
 }
 
-function App() {
-  const [items, setItems] = useState(
-    JSON.parse(localStorage.getItem("items")) || []
+const App: React.FC = () => {
+  const [items, setItems] = useState<Array<Item>>(
+    JSON.parse(localStorage.getItem("items") || "[]")
   );
 
   useEffect(() => {
     localStorage.setItem("items", JSON.stringify(items));
   }, [items]);
 
-  function addItem(quantity, name) {
-    let id = items.findIndex(item => item.name === name);
-    if (id >= 0) {
-      let item = items[id];
+  function getCompletions(): Array<string> {
+    return items.map((item) => item.name);
+  }
+
+  function addItem(name: string, quantity: number): void {
+    const id = items.findIndex((item) => item.name === name);
+    if (id > -1) {
+      const item = items[id];
       updateItem(id, { ...item, quantity: item.quantity + quantity });
     } else {
-      addNewItem(quantity, name);
+      addNewItem(name, quantity);
     }
   }
 
-  function addNewItem(quantity, name) {
-    setItems([...items, { quantity: quantity, name: name }]);
+  function addNewItem(name: string, quantity: number): void {
+    setItems([...items, { name: name, quantity: quantity }]);
   }
 
-  function updateItem(index, item) {
+  function updateItem(id: number, item: Item) {
     var newItems = [...items];
-    newItems[index] = item;
+    newItems[id] = item;
     setItems(newItems);
   }
 
-  function removeItem(id) {
-    setItems(items.filter((_, i) => i !== id));
+  function removeItem(index: number) {
+    setItems(items.filter((_, i) => i !== index));
   }
 
   function startNewList() {
@@ -278,7 +320,7 @@ function App() {
       </header>
 
       <div className="mt-3">
-        <ItemsForm items={items} addItem={addItem} />
+        <ItemsForm completions={getCompletions()} addItem={addItem} />
       </div>
 
       <div className="mt-4">
@@ -301,6 +343,6 @@ function App() {
       </div>
     </div>
   );
-}
+};
 
 export default App;
