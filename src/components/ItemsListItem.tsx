@@ -7,12 +7,14 @@ export interface ItemsListItemProps {
   update: (newItem: Item) => void;
 }
 
+type state = "showing" | "editing-quantity" | "editing-name";
+
 const ItemsListItem: React.FC<ItemsListItemProps> = ({
   item,
   remove,
   update,
 }) => {
-  const [state, setState] = useState("showing"); // showing | editing-quantity | editing-name
+  const [state, setState] = useState<state>("showing");
   const [newName, setNewName] = useState(item.name);
   const [newQuantity, setNewQuantity] = useState(item.quantity.toString());
 
