@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Item } from "../App";
 
 export interface ItemsListItemProps {
@@ -15,11 +15,24 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   update,
 }) => {
   const [state, setState] = useState<state>("showing");
+
+  useEffect(() => {
+    if (state === "editing-quantity") {
+      newQuantityInput.current && newQuantityInput.current.focus();
+      newQuantityInput.current && newQuantityInput.current.select();
+    } else if (state === "editing-name") {
+      newNameInput.current && newNameInput.current.focus();
+      newNameInput.current && newNameInput.current.select();
+    }
+  }, [state]);
+
   const [newName, setNewName] = useState(item.name);
   const [newQuantity, setNewQuantity] = useState(item.quantity.toString());
 
   const quantityForm = useRef<HTMLFormElement>(null);
+  const newQuantityInput = useRef<HTMLInputElement>(null);
   const nameForm = useRef<HTMLFormElement>(null);
+  const newNameInput = useRef<HTMLInputElement>(null);
 
   function handleQuantityChange(event: React.ChangeEvent<HTMLInputElement>) {
     setNewQuantity(event.target.value);
@@ -71,7 +84,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
                 value={newQuantity}
                 onChange={handleQuantityChange}
                 onBlur={resetState}
-                ref={(newNameInput) => newNameInput && newNameInput.focus()}
+                ref={newQuantityInput}
                 required
               />
               <button type="submit" hidden>
@@ -96,7 +109,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
                 value={newName}
                 onChange={handleNameChange}
                 onBlur={resetState}
-                ref={(newNameInput) => newNameInput && newNameInput.focus()}
+                ref={newNameInput}
                 required
               />
               <button type="submit" hidden>
