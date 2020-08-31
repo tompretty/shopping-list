@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NewItemForm from "./components/NewItemForm";
 import ItemsList from "./components/ItemsList";
-import CopyToClipboardButton from "./components/CopyToClipboardButton"
+import CopyToClipboardButton from "./components/CopyToClipboardButton";
 
 export interface Item {
   name: string;
@@ -50,7 +50,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="App d-flex flex-column container mt-5">
+    <div className="App d-flex flex-column container my-5">
       <header className="d-flex align-items-center">
         <span className="h1" role="img" aria-label="shopping cart">
           &#128722;
