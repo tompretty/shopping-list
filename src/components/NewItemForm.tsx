@@ -5,7 +5,10 @@ export interface NewItemFormProps {
   addItem: (name: string, quantity: number) => void;
 }
 
-const NewItemForm: React.FC<NewItemFormProps> = ({ completions, addItem }) => {
+const NewItemForm: React.FC<NewItemFormProps> = ({
+  completions,
+  addItem,
+}: NewItemFormProps) => {
   const [quantity, setQuantity] = useState("");
   const [name, setName] = useState("");
 

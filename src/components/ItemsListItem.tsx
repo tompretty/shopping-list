@@ -13,7 +13,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   item,
   remove,
   update,
-}) => {
+}: ItemsListItemProps) => {
   const [state, setState] = useState<state>("showing");
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   function handleSubmitQuantity(event: React.ChangeEvent<HTMLFormElement>) {
     event.preventDefault();
     if (quantityForm.current && quantityForm.current.reportValidity()) {
-      let newItem = { ...item, quantity: parseInt(newQuantity) };
+      const newItem = { ...item, quantity: parseInt(newQuantity) };
       update(newItem);
       updateState(newItem);
     }
@@ -54,7 +54,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   function handleSubmitName(event: React.ChangeEvent<HTMLFormElement>) {
     event.preventDefault();
     if (nameForm.current && nameForm.current.reportValidity()) {
-      let newItem = { ...item, name: newName };
+      const newItem = { ...item, name: newName };
       update(newItem);
       updateState(newItem);
     }

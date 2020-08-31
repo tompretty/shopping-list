@@ -7,11 +7,11 @@ export interface CopyToClipboardButtonProps {
 
 const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
   items,
-}) => {
+}: CopyToClipboardButtonProps) => {
   const [text, setText] = useState("Copy to clipboard");
 
   function copyToClipboard() {
-    let textArea = document.createElement("textarea");
+    const textArea = document.createElement("textarea");
     textArea.value = itemsToString();
     document.body.appendChild(textArea);
     textArea.select();
