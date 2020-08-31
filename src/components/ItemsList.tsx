@@ -12,7 +12,7 @@ const ItemsList: React.FC<ItemsListProps> = ({
   items,
   removeItem,
   updateItem,
-}) => {
+}: ItemsListProps) => {
   return (
     <ul className="list-group">
       {items.map((item, index) => {

@@ -36,7 +36,7 @@ const App: React.FC = () => {
   }
 
   function updateItem(id: number, item: Item) {
-    var newItems = [...items];
+    const newItems = [...items];
     newItems[id] = item;
     setItems(newItems);
   }
