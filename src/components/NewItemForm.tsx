@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
+import classNames from "classnames";
 
 export interface NewItemFormProps {
   completions: Array<string>;
@@ -50,7 +51,9 @@ const NewItemForm: React.FC<NewItemFormProps> = ({
             name="quantity"
             id="quantity"
             type="number"
-            className={`form-control ${errors.quantity ? "is-invalid" : ""}`}
+            className={classNames("form-control", {
+              "is-invalid": errors.quantity,
+            })}
           />
           <div className="invalid-feedback">Please enter a quantity</div>
         </div>
@@ -62,7 +65,9 @@ const NewItemForm: React.FC<NewItemFormProps> = ({
             id="name"
             type="text"
             list="completions"
-            className={`form-control ${errors.name ? "is-invalid" : ""}`}
+            className={classNames("form-control", {
+              "is-invalid": errors.name,
+            })}
           />
           <div className="invalid-feedback">Please enter a name</div>
           <datalist id="completions">
