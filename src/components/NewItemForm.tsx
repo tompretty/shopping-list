@@ -1,78 +1,70 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
+import { useForm } from "react-hook-form";
 
 export interface NewItemFormProps {
   completions: Array<string>;
   addItem: (name: string, quantity: number) => void;
 }
 
+interface FormData {
+  quantity: string;
+  name: string;
+}
+
 const NewItemForm: React.FC<NewItemFormProps> = ({
   completions,
   addItem,
 }: NewItemFormProps) => {
-  const [quantity, setQuantity] = useState("");
-  const [name, setName] = useState("");
+  const { register, handleSubmit, errors, reset } = useForm<FormData>();
+  const quantityInputRef = useRef<HTMLInputElement | null>(null);
 
-  const form = useRef<HTMLFormElement>(null);
-  const quantityInput = useRef<HTMLInputElement>(null);
+  const focusQuantityInput = () => {
+    quantityInputRef.current?.focus();
+  };
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (form.current && form.current.reportValidity()) {
-      addItem(name, parseFloat(quantity));
-      resetState();
-    }
-  }
-
-  function resetState() {
-    setQuantity("");
-    setName("");
-
-    quantityInput.current && quantityInput.current.focus();
-  }
-
-  function handleQuantityChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setQuantity(event.target.value);
-  }
-
-  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setName(event.target.value);
-  }
+  const onSubmit = ({ quantity, name }: FormData) => {
+    addItem(name, parseFloat(quantity));
+    reset();
+    focusQuantityInput();
+  };
 
   return (
-    <form onSubmit={handleSubmit} ref={form} noValidate>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="form-row align-items-center font-weight-bold">
-        <label className="col-3" htmlFor="quantityInput">
+        <label className="col-3" htmlFor="quantity">
           Quantity
         </label>
         <div className="col-1"></div>
-        <label className="col-8" htmlFor="nameInput">
+        <label className="col-8" htmlFor="name">
           Name
         </label>
       </div>
 
-      <div className="form-row align-items-center">
+      <div className="form-row">
         <div className="col-3">
           <input
-            id="quantityInput"
+            ref={(ref) => {
+              register(ref, { required: true });
+              quantityInputRef.current = ref;
+            }}
+            name="quantity"
+            id="quantity"
             type="number"
-            className="form-control"
-            onChange={handleQuantityChange}
-            value={quantity}
-            ref={quantityInput}
-            required
+            className={`form-control ${errors.quantity ? "is-invalid" : ""}`}
           />
+          <div className="invalid-feedback">Please enter a quantity</div>
         </div>
         <div className="col-1 text-center">&times;</div>
         <div className="col-6">
           <input
-            id="nameInput"
+            ref={register({ required: true })}
+            name="name"
+            id="name"
             type="text"
             list="completions"
-            className="form-control"
-            onChange={handleNameChange}
-            value={name}
-            required
+            className={`form-control ${errors.name ? "is-invalid" : ""}`}
           />
+          <div className="invalid-feedback">Please enter a name</div>
           <datalist id="completions">
             {completions.map((completion, index) => {
               return <option value={completion} key={index} />;
