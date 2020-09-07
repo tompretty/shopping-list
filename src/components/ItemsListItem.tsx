@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
 import { Item } from "../App";
 
 export interface ItemsListItemProps {
@@ -9,12 +11,46 @@ export interface ItemsListItemProps {
 
 type state = "showing" | "editing-quantity" | "editing-name";
 
+interface QuantityFormData {
+  quantity: string;
+}
+interface NameFormData {
+  name: string;
+}
+
 const ItemsListItem: React.FC<ItemsListItemProps> = ({
   item,
   remove,
   update,
 }: ItemsListItemProps) => {
   const [state, setState] = useState<state>("showing");
+  const {
+    register: registerQuantity,
+    handleSubmit: handleSubmitQuantity,
+    errors: quantityErrors,
+  } = useForm<QuantityFormData>({
+    defaultValues: { quantity: item.quantity.toString() },
+  });
+
+  const {
+    register: registerName,
+    handleSubmit: handleSubmitName,
+    errors: nameErrors,
+  } = useForm<NameFormData>({
+    defaultValues: { name: item.name },
+  });
+
+  const onSubmitQuantity = ({ quantity }: QuantityFormData) => {
+    update({ ...item, quantity: parseFloat(quantity) });
+    reset();
+  };
+
+  const onSubmitName = ({ name }: NameFormData) => {
+    update({ ...item, name });
+    reset();
+  };
+
+  const reset = () => setState("showing");
 
   useEffect(() => {
     if (state === "editing-quantity") {
@@ -26,67 +62,28 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
     }
   }, [state]);
 
-  const [newName, setNewName] = useState(item.name);
-  const [newQuantity, setNewQuantity] = useState(item.quantity.toString());
-
-  const quantityForm = useRef<HTMLFormElement>(null);
-  const newQuantityInput = useRef<HTMLInputElement>(null);
-  const nameForm = useRef<HTMLFormElement>(null);
-  const newNameInput = useRef<HTMLInputElement>(null);
-
-  function handleQuantityChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setNewQuantity(event.target.value);
-  }
-
-  function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setNewName(event.target.value);
-  }
-
-  function handleSubmitQuantity(event: React.ChangeEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (quantityForm.current && quantityForm.current.reportValidity()) {
-      const newItem = { ...item, quantity: parseInt(newQuantity) };
-      update(newItem);
-      updateState(newItem);
-    }
-  }
-
-  function handleSubmitName(event: React.ChangeEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (nameForm.current && nameForm.current.reportValidity()) {
-      const newItem = { ...item, name: newName };
-      update(newItem);
-      updateState(newItem);
-    }
-  }
-
-  function updateState(newItem: Item) {
-    setState("showing");
-    setNewQuantity(newItem.quantity.toString());
-    setNewName(newItem.name);
-  }
-
-  function resetState() {
-    setState("showing");
-    setNewQuantity(item.quantity.toString());
-    setNewName(item.name);
-  }
+  const newQuantityInput = useRef<HTMLInputElement | null>(null);
+  const newNameInput = useRef<HTMLInputElement | null>(null);
 
   return (
     <li className="list-group-item">
-      <div className="row align-items-center">
+      <div className="row">
         <div className="col-2 text-right">
           {state === "editing-quantity" ? (
-            <form onSubmit={handleSubmitQuantity} ref={quantityForm} noValidate>
+            <form onSubmit={handleSubmitQuantity(onSubmitQuantity)}>
               <input
-                className="form-control form-control-sm"
+                ref={(ref) => {
+                  registerQuantity(ref, { required: true });
+                  newQuantityInput.current = ref;
+                }}
+                onBlur={reset}
+                name="quantity"
+                className={classNames("form-control", "form-control-sm", {
+                  "is-invalid": quantityErrors.quantity,
+                })}
                 type="number"
-                value={newQuantity}
-                onChange={handleQuantityChange}
-                onBlur={resetState}
-                ref={newQuantityInput}
-                required
               />
+              <div className="invalid-feedback">Please enter a quantity</div>
               <button type="submit" hidden>
                 Submit
               </button>
@@ -102,16 +99,20 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
 
         <div className="col-6">
           {state === "editing-name" ? (
-            <form onSubmit={handleSubmitName} ref={nameForm} noValidate>
+            <form onSubmit={handleSubmitName(onSubmitName)}>
               <input
-                className="form-control form-control-sm"
+                ref={(ref) => {
+                  registerName(ref, { required: true });
+                  newNameInput.current = ref;
+                }}
+                onBlur={reset}
+                name="name"
+                className={classNames("form-control", "form-control-sm", {
+                  "is-invalid": nameErrors.name,
+                })}
                 type="text"
-                value={newName}
-                onChange={handleNameChange}
-                onBlur={resetState}
-                ref={newNameInput}
-                required
               />
+              <div className="invalid-feedback">Please enter a name</div>
               <button type="submit" hidden>
                 Submit
               </button>
