@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import classNames from "classnames";
 
 export interface NewItemFormProps {
-  completions: Array<string>;
+  completions: string[];
   addItem: (name: string, quantity: number) => void;
 }
 
@@ -71,9 +71,9 @@ const NewItemForm: React.FC<NewItemFormProps> = ({
           />
           <div className="invalid-feedback">Please enter a name</div>
           <datalist id="completions">
-            {completions.map((completion, index) => {
-              return <option value={completion} key={index} />;
-            })}
+            {completions.map((completion, index) => (
+              <option value={completion} key={index} />
+            ))}
           </datalist>
         </div>
         <div className="col-2">

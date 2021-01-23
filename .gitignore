@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# random type file that react is generating
+src/react-app-env.d.ts

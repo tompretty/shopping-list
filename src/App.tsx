@@ -9,7 +9,7 @@ export interface Item {
 }
 
 const App: React.FC = () => {
-  const [items, setItems] = useState<Array<Item>>(
+  const [items, setItems] = useState<Item[]>(
     JSON.parse(localStorage.getItem("items") || "[]")
   );
 
@@ -17,7 +17,7 @@ const App: React.FC = () => {
     localStorage.setItem("items", JSON.stringify(items));
   }, [items]);
 
-  function getCompletions(): Array<string> {
+  function getCompletions(): string[] {
     return items.map((item) => item.name);
   }
 
@@ -32,17 +32,19 @@ const App: React.FC = () => {
   }
 
   function addNewItem(name: string, quantity: number): void {
-    setItems([...items, { name: name, quantity: quantity }]);
+    setItems([...items, { name, quantity }]);
   }
 
-  function updateItem(id: number, item: Item) {
-    const newItems = [...items];
-    newItems[id] = item;
-    setItems(newItems);
+  function updateItem(index: number, updates: Partial<Item>) {
+    setItems([
+      ...items.slice(0, index),
+      { ...items[index], ...updates },
+      ...items.slice(index + 1),
+    ]);
   }
 
   function removeItem(index: number) {
-    setItems(items.filter((_, i) => i !== index));
+    setItems([...items.slice(0, index), ...items.slice(index + 1)]);
   }
 
   function startNewList() {

@@ -3,9 +3,9 @@ import { Item } from "../App";
 import ItemsListItem from "./ItemsListItem";
 
 export interface ItemsListProps {
-  items: Array<Item>;
+  items: Item[];
   removeItem: (index: number) => void;
-  updateItem: (index: number, item: Item) => void;
+  updateItem: (index: number, updates: Partial<Item>) => void;
 }
 
 const ItemsList: React.FC<ItemsListProps> = ({
@@ -20,7 +20,7 @@ const ItemsList: React.FC<ItemsListProps> = ({
           <ItemsListItem
             item={item}
             key={index}
-            update={(item) => updateItem(index, item)}
+            update={(updates) => updateItem(index, updates)}
             remove={() => removeItem(index)}
           />
         );
