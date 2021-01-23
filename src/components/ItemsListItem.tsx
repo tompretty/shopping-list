@@ -6,10 +6,10 @@ import { Item } from "../App";
 export interface ItemsListItemProps {
   item: Item;
   remove: () => void;
-  update: (newItem: Item) => void;
+  update: (updates: Partial<Item>) => void;
 }
 
-type state = "showing" | "editing-quantity" | "editing-name";
+type state = "SHOWING" | "EDITING-QUANTITY" | "EDITING-NAME";
 
 interface QuantityFormData {
   quantity: string;
@@ -23,7 +23,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   remove,
   update,
 }: ItemsListItemProps) => {
-  const [state, setState] = useState<state>("showing");
+  const [state, setState] = useState<state>("SHOWING");
   const {
     register: registerQuantity,
     handleSubmit: handleSubmitQuantity,
@@ -46,19 +46,19 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   };
 
   const onSubmitName = ({ name }: NameFormData) => {
-    update({ ...item, name });
+    update({ name });
     reset();
   };
 
-  const reset = () => setState("showing");
+  const reset = () => setState("SHOWING");
 
   useEffect(() => {
-    if (state === "editing-quantity") {
-      newQuantityInput.current && newQuantityInput.current.focus();
-      newQuantityInput.current && newQuantityInput.current.select();
-    } else if (state === "editing-name") {
-      newNameInput.current && newNameInput.current.focus();
-      newNameInput.current && newNameInput.current.select();
+    if (state === "EDITING-QUANTITY") {
+      newQuantityInput.current?.focus();
+      newQuantityInput.current?.select();
+    } else if (state === "EDITING-NAME") {
+      newNameInput.current?.focus();
+      newNameInput.current?.select();
     }
   }, [state]);
 
@@ -69,7 +69,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
     <li className="list-group-item">
       <div className="row">
         <div className="col-2 text-right">
-          {state === "editing-quantity" ? (
+          {state === "EDITING-QUANTITY" ? (
             <form onSubmit={handleSubmitQuantity(onSubmitQuantity)}>
               <input
                 ref={(ref) => {
@@ -89,7 +89,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
               </button>
             </form>
           ) : (
-            <div onClick={() => setState("editing-quantity")}>
+            <div onClick={() => setState("EDITING-QUANTITY")}>
               {item.quantity}
             </div>
           )}
@@ -98,7 +98,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
         <div className="col-2 text-center">&times;</div>
 
         <div className="col-6">
-          {state === "editing-name" ? (
+          {state === "EDITING-NAME" ? (
             <form onSubmit={handleSubmitName(onSubmitName)}>
               <input
                 ref={(ref) => {
@@ -118,7 +118,7 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
               </button>
             </form>
           ) : (
-            <div onClick={() => setState("editing-name")}>{item.name}</div>
+            <div onClick={() => setState("EDITING-NAME")}>{item.name}</div>
           )}
         </div>
 
