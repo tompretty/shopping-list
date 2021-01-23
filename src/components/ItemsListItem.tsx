@@ -27,18 +27,28 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   const {
     register: registerQuantity,
     handleSubmit: handleSubmitQuantity,
+    reset: quantityReset,
     errors: quantityErrors,
   } = useForm<QuantityFormData>({
     defaultValues: { quantity: item.quantity.toString() },
   });
 
+  useEffect(() => {
+    quantityReset({ quantity: item.quantity.toString() });
+  }, [quantityReset, item.quantity]);
+
   const {
     register: registerName,
     handleSubmit: handleSubmitName,
+    reset: resetName,
     errors: nameErrors,
   } = useForm<NameFormData>({
     defaultValues: { name: item.name },
   });
+
+  useEffect(() => {
+    resetName({ name: item.name });
+  }, [resetName, item.name]);
 
   const onSubmitQuantity = ({ quantity }: QuantityFormData) => {
     update({ ...item, quantity: parseFloat(quantity) });
