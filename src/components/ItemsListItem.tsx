@@ -1,144 +1,231 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import classNames from "classnames";
 import { Item } from "../App";
+import { makeStyles } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import DragHandleIcon from "@material-ui/icons/DragHandle";
+import ActionsButton from "./ActionsButton";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import { Draggable } from "react-beautiful-dnd";
 
-export interface ItemsListItemProps {
-  item: Item;
-  remove: () => void;
-  update: (updates: Partial<Item>) => void;
-}
+const useStyles = makeStyles(({ spacing, breakpoints }) => ({
+  container: {
+    width: "100%",
+  },
 
-type state = "SHOWING" | "EDITING-QUANTITY" | "EDITING-NAME";
+  viewingContainer: {
+    display: "flex",
+    alignItems: "center",
+    padding: `${spacing(1)}px ${spacing(2)}px`,
+  },
 
-interface QuantityFormData {
+  editingContainer: {
+    display: "flex",
+    alignItems: "center",
+    padding: `${spacing(2)}px ${spacing(2)}px`,
+  },
+
+  textContainer: {
+    marginLeft: spacing(3),
+  },
+
+  quantityContainer: {
+    display: "inline-block",
+    width: "50px",
+    textAlign: "right",
+  },
+
+  nameContainer: {
+    marginLeft: spacing(1),
+  },
+
+  formContainer: {
+    marginLeft: spacing(3),
+    paddingRight: spacing(2),
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+
+    "& > * + *": {
+      marginTop: spacing(2),
+    },
+
+    [breakpoints.up("sm")]: {
+      paddingRight: 0,
+      flexDirection: "row",
+
+      "& > * + *": {
+        marginLeft: spacing(2),
+        marginTop: 0,
+      },
+    },
+  },
+
+  fieldsContainer: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+
+    "& > * + *": {
+      marginTop: spacing(1),
+    },
+
+    [breakpoints.up("sm")]: {
+      flexDirection: "row",
+
+      "& > * + *": {
+        marginLeft: spacing(2),
+        marginTop: 0,
+      },
+    },
+  },
+
+  fieldContainer: {
+    [breakpoints.up("md")]: {
+      width: "200px",
+    },
+  },
+
+  formButtonsContainer: {
+    display: "flex",
+
+    "& > * + *": {
+      marginLeft: spacing(1),
+    },
+  },
+
+  actionsButtonContainer: {
+    marginLeft: "auto",
+  },
+}));
+
+interface FormData {
+  name: string;
   quantity: string;
 }
-interface NameFormData {
-  name: string;
+
+export interface ItemsListItemProps {
+  index: number;
+  item: Item;
+  onSave: (name: string, quantity: number) => void;
+  onDelete: () => void;
 }
 
+const EMPTY_QUANTITY_ERROR_MESSAGE = "Please enter a quantity";
+const EMPTY_NAME_ERROR_MESSAGE = "Please enter a name";
+
 const ItemsListItem: React.FC<ItemsListItemProps> = ({
+  index,
   item,
-  remove,
-  update,
+  onSave,
+  onDelete,
 }: ItemsListItemProps) => {
-  const [state, setState] = useState<state>("SHOWING");
-  const {
-    register: registerQuantity,
-    handleSubmit: handleSubmitQuantity,
-    reset: quantityReset,
-    errors: quantityErrors,
-  } = useForm<QuantityFormData>({
-    defaultValues: { quantity: item.quantity.toString() },
-  });
-
-  useEffect(() => {
-    quantityReset({ quantity: item.quantity.toString() });
-  }, [quantityReset, item.quantity]);
-
-  const {
-    register: registerName,
-    handleSubmit: handleSubmitName,
-    reset: resetName,
-    errors: nameErrors,
-  } = useForm<NameFormData>({
-    defaultValues: { name: item.name },
-  });
-
-  useEffect(() => {
-    resetName({ name: item.name });
-  }, [resetName, item.name]);
-
-  const onSubmitQuantity = ({ quantity }: QuantityFormData) => {
-    update({ ...item, quantity: parseFloat(quantity) });
-    reset();
+  const defaultValues: FormData = {
+    name: item.name,
+    quantity: item.quantity.toString(),
   };
 
-  const onSubmitName = ({ name }: NameFormData) => {
-    update({ name });
-    reset();
+  const { register, handleSubmit, errors } = useForm<FormData>({
+    defaultValues,
+  });
+  const [showForm, setShowForm] = useState(false);
+
+  const openForm = () => setShowForm(true);
+  const closeForm = () => setShowForm(false);
+  const onSubmit = (data: FormData) => {
+    closeForm();
+
+    onSave(data.name, parseFloat(data.quantity));
   };
 
-  const reset = () => setState("SHOWING");
-
-  useEffect(() => {
-    if (state === "EDITING-QUANTITY") {
-      newQuantityInput.current?.focus();
-      newQuantityInput.current?.select();
-    } else if (state === "EDITING-NAME") {
-      newNameInput.current?.focus();
-      newNameInput.current?.select();
-    }
-  }, [state]);
-
-  const newQuantityInput = useRef<HTMLInputElement | null>(null);
-  const newNameInput = useRef<HTMLInputElement | null>(null);
+  const classes = useStyles();
 
   return (
-    <li className="list-group-item">
-      <div className="row">
-        <div className="col-2 text-right">
-          {state === "EDITING-QUANTITY" ? (
-            <form onSubmit={handleSubmitQuantity(onSubmitQuantity)}>
-              <input
-                ref={(ref) => {
-                  registerQuantity(ref, { required: true });
-                  newQuantityInput.current = ref;
-                }}
-                onBlur={reset}
-                name="quantity"
-                className={classNames("form-control", "form-control-sm", {
-                  "is-invalid": quantityErrors.quantity,
-                })}
-                type="number"
-              />
-              <div className="invalid-feedback">Please enter a quantity</div>
-              <button type="submit" hidden>
-                Submit
-              </button>
-            </form>
-          ) : (
-            <div onClick={() => setState("EDITING-QUANTITY")}>
-              {item.quantity}
-            </div>
-          )}
-        </div>
+    <Draggable draggableId={item.id} index={index}>
+      {(provided) => (
+        <div ref={provided.innerRef} {...provided.draggableProps}>
+          <Paper className={classes.container}>
+            {!showForm && (
+              <div className={classes.viewingContainer}>
+                <div {...provided.dragHandleProps}>
+                  <DragHandleIcon />
+                </div>
 
-        <div className="col-2 text-center">&times;</div>
+                <Typography className={classes.textContainer}>
+                  <span className={classes.quantityContainer}>
+                    {item.quantity}
+                  </span>
 
-        <div className="col-6">
-          {state === "EDITING-NAME" ? (
-            <form onSubmit={handleSubmitName(onSubmitName)}>
-              <input
-                ref={(ref) => {
-                  registerName(ref, { required: true });
-                  newNameInput.current = ref;
-                }}
-                onBlur={reset}
-                name="name"
-                className={classNames("form-control", "form-control-sm", {
-                  "is-invalid": nameErrors.name,
-                })}
-                type="text"
-              />
-              <div className="invalid-feedback">Please enter a name</div>
-              <button type="submit" hidden>
-                Submit
-              </button>
-            </form>
-          ) : (
-            <div onClick={() => setState("EDITING-NAME")}>{item.name}</div>
-          )}
-        </div>
+                  <span className={classes.nameContainer}>{item.name}</span>
+                </Typography>
 
-        <div className="col-2">
-          <button className="btn btn-outline-danger btn-sm" onClick={remove}>
-            &times;
-          </button>
+                <div className={classes.actionsButtonContainer}>
+                  <ActionsButton
+                    id={item.id}
+                    onEdit={openForm}
+                    onDelete={onDelete}
+                  />
+                </div>
+              </div>
+            )}
+
+            {showForm && (
+              <div className={classes.editingContainer}>
+                <div {...provided.dragHandleProps}>
+                  <DragHandleIcon />
+                </div>
+
+                <ClickAwayListener onClickAway={closeForm}>
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className={classes.formContainer}
+                  >
+                    <div className={classes.fieldsContainer}>
+                      <TextField
+                        id="quantity-input"
+                        inputRef={register({
+                          required: EMPTY_QUANTITY_ERROR_MESSAGE,
+                        })}
+                        helperText={errors.quantity?.message}
+                        error={Boolean(errors.quantity)}
+                        name="quantity"
+                        className={classes.fieldContainer}
+                        type="number"
+                        autoFocus
+                      />
+
+                      <TextField
+                        id="name-input"
+                        inputRef={register({
+                          required: EMPTY_NAME_ERROR_MESSAGE,
+                        })}
+                        helperText={errors.name?.message}
+                        error={Boolean(errors.name)}
+                        name="name"
+                        className={classes.fieldContainer}
+                      />
+                    </div>
+
+                    <div className={classes.formButtonsContainer}>
+                      <Button color="primary" variant="outlined" type="submit">
+                        Save
+                      </Button>
+
+                      <Button onClick={closeForm}>Cancel</Button>
+                    </div>
+                  </form>
+                </ClickAwayListener>
+              </div>
+            )}
+          </Paper>
         </div>
-      </div>
-    </li>
+      )}
+    </Draggable>
   );
 };
 
