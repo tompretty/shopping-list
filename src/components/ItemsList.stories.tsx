@@ -1,6 +1,5 @@
+import { Meta, Story } from "@storybook/react/types-6-0";
 import React from "react";
-import { Story, Meta } from "@storybook/react/types-6-0";
-
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ItemsList, { ItemsListProps } from "./ItemsList";
 

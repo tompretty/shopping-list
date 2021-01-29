@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { Item, Category } from "../App";
-import ItemsListItem from "./ItemsListItem";
-import ActionsButton from "./ActionsButton";
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
+import React, { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { useForm } from "react-hook-form";
+import { Category, Item } from "../App";
+import ActionsButton from "./ActionsButton";
+import ItemsListItem from "./ItemsListItem";
 
 const useStyles = makeStyles(({ spacing }) => ({
   container: {
@@ -92,16 +92,13 @@ const ItemsList: React.FC<ItemsListProps> = ({
   onSaveItem,
   onDeleteItem,
 }: ItemsListProps) => {
-  const defaultValues: FormData = {
-    name: category.name,
-  };
-
   const { register, handleSubmit, errors, reset } = useForm<FormData>({
-    defaultValues,
+    defaultValues: { name: category.name },
   });
 
   useEffect(() => {
-    reset(defaultValues);
+    reset({ name: category.name });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category.name]);
 
   const [showForm, setShowForm] = useState(false);
