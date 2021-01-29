@@ -1,8 +1,7 @@
-import React from "react";
-import { Story, Meta } from "@storybook/react/types-6-0";
-
-import ActionsButton, { ActionsButtonProps } from "./ActionsButton";
 import List from "@material-ui/core/List";
+import { Meta, Story } from "@storybook/react/types-6-0";
+import React from "react";
+import ActionsButton, { ActionsButtonProps } from "./ActionsButton";
 
 export default {
   title: "ActionsButton",

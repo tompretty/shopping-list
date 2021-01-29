@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import Button from "@material-ui/core/Button";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import DragHandleIcon from "@material-ui/icons/DragHandle";
+import React, { useEffect, useState } from "react";
+import { Draggable } from "react-beautiful-dnd";
 import { useForm } from "react-hook-form";
 import { Item } from "../App";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import DragHandleIcon from "@material-ui/icons/DragHandle";
 import ActionsButton from "./ActionsButton";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import { Draggable } from "react-beautiful-dnd";
 
 const useStyles = makeStyles(({ spacing, breakpoints }) => ({
   container: {
@@ -125,14 +125,21 @@ const ItemsListItem: React.FC<ItemsListItemProps> = ({
   onSave,
   onDelete,
 }: ItemsListItemProps) => {
-  const defaultValues: FormData = {
-    name: item.name,
-    quantity: item.quantity.toString(),
-  };
-
-  const { register, handleSubmit, errors } = useForm<FormData>({
-    defaultValues,
+  const { register, handleSubmit, errors, reset } = useForm<FormData>({
+    defaultValues: {
+      name: item.name,
+      quantity: item.quantity.toString(),
+    },
   });
+
+  useEffect(() => {
+    reset({
+      name: item.name,
+      quantity: item.quantity.toString(),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.name, item.quantity]);
+
   const [showForm, setShowForm] = useState(false);
 
   const openForm = () => setShowForm(true);
