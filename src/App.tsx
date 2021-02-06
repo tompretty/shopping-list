@@ -355,6 +355,7 @@ const App: React.FC = () => {
       .flat()
       .map((iId) => shoppingList.items[iId])
       .map((i) => `${i.quantity} ${i.name}`)
+      .reverse()
       .join("\n");
 
   const onCopyToClipboard = () => {
