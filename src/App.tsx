@@ -162,19 +162,30 @@ const App: React.FC = () => {
         const destinationNewItemIds = [...destinationCategory.itemIds];
         destinationNewItemIds.splice(destination.index, 0, draggableId);
 
+        let newCategoryIds = [...shoppingList.categoryIds];
+        const newCategories = {
+          ...shoppingList.categories,
+          [sourceCategory.id]: {
+            ...sourceCategory,
+            itemIds: sourceNewItemIds,
+          },
+          [destinationCategory.id]: {
+            ...destinationCategory,
+            itemIds: destinationNewItemIds,
+          },
+        };
+
+        if (sourceNewItemIds.length === 0) {
+          delete newCategories[sourceCategory.id];
+          newCategoryIds = newCategoryIds.filter(
+            (c) => c !== sourceCategory.id
+          );
+        }
+
         setShoppingList({
           ...shoppingList,
-          categories: {
-            ...shoppingList.categories,
-            [sourceCategory.id]: {
-              ...sourceCategory,
-              itemIds: sourceNewItemIds,
-            },
-            [destinationCategory.id]: {
-              ...destinationCategory,
-              itemIds: destinationNewItemIds,
-            },
-          },
+          categories: newCategories,
+          categoryIds: newCategoryIds,
         });
       }
     }
